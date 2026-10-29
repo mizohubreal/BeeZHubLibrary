@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeeZ Hub Library</title>
+    <style>
+        /* ==========================================================================
+           1. RESET & BIẾN MÀU CHỦ ĐẠO (GLOSSY GOLD & DARK HONEYCOMB UI)
+           ========================================================================== */
+        :root {
+            --bg-dark: #090806;
+            --bg-card: #13110c;
+            --bg-card-hover: #1b1810;
+            --bg-black-board: #040404;
+            --gold-light: #fff6b3;
+            --gold-main: #ffd700;
+            --gold-amber: #f59e0b;
+            --gold-deep: #b47800;
+            --text-main: #f9f6ee;
+            --text-muted: #9e9682;
+            --border-gold: rgba(255, 215, 0, 0.25);
+            --border-gold-strong: rgba(255, 215, 0, 0.65);
+            --danger: #ef4444;
+            --success: #22c55e;
+            --radius-xl: 18px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 15% 10%, rgba(255, 208, 0, 0.11) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.08) 0%, transparent 40%),
+                repeating-linear-gradient(60deg, rgba(255, 215, 0, 0.02) 0px, rgba(255, 215, 0, 0.02) 1px, transparent 1px, transparent 28px),
+                repeating-linear-gradient(-60deg, rgba(255, 215, 0, 0.02) 0px, rgba(255, 215, 0, 0.02) 1px, transparent 1px, transparent 28px);
+        }
+
+        /* Thanh cuộn tuỳ chỉnh màu vàng */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0c09;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ffd700, #b47800);
+            border-radius: 999px;
+        }
+
+        /* ==========================================================================
+           2. HIỆU ỨNG VÀNG GLOSSY (CHỮ & NÚT BẤM ÁNH KIM)
+           ========================================================================== */
+        .glossy-gold-text {
+            background: linear-gradient(
+                180deg,
+                #ffffff 0%,
+                #fff3a1 22%,
+                #ffd700 50%,
+                #c88700 78%,
+                #ffe875 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: #ffd700;
+            filter: drop-shadow(0 2px 10px rgba(255, 215, 0, 0.32));
+        }
+
+        .btn-glossy-gold {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 245, 175, 0.85);
+            border-radius: var(--radius-md);
+            background: linear-gradient(
+                180deg,
+                #fff7be 0%,
+                #ffe047 22%,
+                #ffcc00 50%,
+                #d48b00 52%,
+                #ffbb00 85%,
+                #fff099 100%
+            );
+            color: #191100;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            padding: 10px 20px;
+            cursor: pointer;
+            box-shadow:
+                0 5px 18px rgba(255, 200, 0, 0.35),
+                inset 0 2px 2px rgba(255, 255, 255, 0.9),
+                inset 0 -2px 4px rgba(130, 75, 0, 0.45);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+            user-select: none;
+        }
+
+        .btn-glossy-gold::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.08) 100%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .btn-glossy-gold::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -75%;
+            width: 45%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+            transform: rotate(25deg);
+            animation: glossySweep 3.2s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes glossySweep {
+            0% { left: -75%; }
+            45%, 100% { left: 135%; }
+        }
+
+        .btn-glossy-gold:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.06);
+            box-shadow:
+                0 8px 25px rgba(255, 215, 0, 0.55),
+                inset 0 2px 3px rgba(255, 255, 255, 0.95);
+        }
+
+        .btn-glossy-gold:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-outline-gold {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            color: #ffe270;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-gold:hover {
+            background: rgba(255, 215, 0, 0.18);
+            border-color: var(--gold-main);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn-danger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 6px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.28);
+            border-color: #ef4444;
+            color: #ffffff;
+        }
+
+        /* ==========================================================================
+           3. BỐ CỤC CHÍNH & HEADER
+           ========================================================================== */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(11, 10, 7, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-gold);
+        }
+
+        .header-inner {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .bee-logo-frame {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.28), rgba(255, 166, 0, 0.05));
+            border: 1.5px solid rgba(255, 215, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            box-shadow: 0 0 22px rgba(255, 215, 0, 0.22);
+            flex-shrink: 0;
+        }
+
+        .bee-float {
+            animation: beeHover 3s ease-in-out infinite;
+        }
+
+        @keyframes beeHover {
+            0%, 100% { transform: translateY(0px) rotate(-1deg); }
+            50% { transform: translateY(-4px) rotate(1.5deg); }
+        }
+
+        .brand-title {
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: -0.4px;
+            line-height: 1.15;
+        }
+
+        .brand-sub {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.syncing {
+            background: #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+        }
+
+        .status-dot.offline {
+            background: #f59e0b;
+            box-shadow: 0 0 8px #f59e0b;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ==========================================================================
+           4. CONTAINER, BANNER & THANH TÌM KIẾM
+           ========================================================================== */
+        .main-container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 24px 20px 64px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #17140d 0%, #1d180e 50%, #12100b 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-xl);
+            padding: 20px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1 1 320px;
+        }
+
+        .hero-mascot {
+            width: 68px;
+            height: 68px;
+            border-radius: 16px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            flex-shrink: 0;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--gold-main);
+            margin-bottom: 4px;
+        }
+
+        .hero-heading {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .hero-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1 1 240px;
+            max-width: 320px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #0b0a07;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 11px 14px 11px 38px;
+            color: #ffffff;
+            font-size: 13.5px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold-main);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold-main);
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           5. BẢNG QUẢN TRỊ ADMIN (THÊM MỤC & XÓA GIAO DIỆN + ĐỒNG BỘ FIREBASE)
+           ========================================================================== */
+        .admin-panel {
+            display: none;
+            background: linear-gradient(180deg, #19150c 0%, #110f09 100%);
+            border: 1.5px solid rgba(255, 215, 0, 0.5);
+            border-radius: var(--radius-xl);
+            padding: 22px;
+            box-shadow: 0 12px 35px rgba(255, 200, 0, 0.12);
+        }
+
+        .admin-panel.show {
+            display: block;
+            animation: fadeInDown 0.25s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            flex-wrap: wrap;
+        }
+
+        .admin-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.45);
+            color: var(--gold-main);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .admin-form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            background: #070604;
+            border: 1px solid rgba(255, 215, 0, 0.32);
+            border-radius: 10px;
+            padding: 11px 14px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-textarea {
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            min-height: 92px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--gold-main);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+        }
+
+        .admin-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        .cloud-sync-note {
+            font-size: 12px;
+            color: #a7f3d0;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ==========================================================================
+           6. DANH SÁCH CÁC MỤC HUB (CARDS GRID)
+           ========================================================================== */
+        .section-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #e5dec9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .count-pill {
+            background: rgba(255, 215, 0, 0.14);
+            border: 1px solid rgba(255, 215, 0, 0.38);
+            color: var(--gold-main);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 14px;
+        }
+
+        .hub-card {
+            background: linear-gradient(155deg, var(--bg-card) 0%, #0d0c08 100%);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 12px;
+            user-select: none;
+            position: relative;
+        }
+
+        .hub-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 215, 0, 0.12);
+        }
+
+        .hub-card.selected {
+            border-color: var(--gold-main);
+            background: linear-gradient(155deg, #211c0f 0%, #110f08 100%);
+            box-shadow: 0 0 0 1px var(--gold-main), 0 10px 28px rgba(255, 215, 0, 0.18);
+        }
+
+        .hub-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .hub-card-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .hub-bee-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .hub-index-badge {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            background: var(--gold-main);
+            color: #000;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 1px 5px;
+            border-radius: 5px;
+        }
+
+        .hub-name {
+            font-size: 15.5px;
+            font-weight: 800;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hub-card.selected .hub-name {
+            color: var(--gold-main);
+        }
+
+        .hub-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .hub-expand-area {
+            display: none;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(255, 215, 0, 0.25);
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .hub-card.selected .hub-expand-area {
+            display: flex;
+            animation: expandFade 0.2s ease;
+        }
+
+        @keyframes expandFade {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================================
+           7. BẢNG ĐEN CHỨA NỘI DUNG & DÒNG CHỮ GLOSSY COOLDOWN 5S
+           ========================================================================== */
+        .script-viewer-section {
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 4px;
+        }
+
+        .script-viewer-section.active {
+            display: flex;
+            animation: fadeInDown 0.25s ease;
+        }
+
+        .black-board {
+            background-color: var(--bg-black-board);
+            border: 1.5px solid rgba(255, 215, 0, 0.55);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow:
+                0 18px 45px rgba(0, 0, 0, 0.9),
+                0 0 28px rgba(255, 215, 0, 0.16),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .board-topbar {
+            background: linear-gradient(90deg, #14120b 0%, #1c180d 50%, #14120b 100%);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.25);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .board-dots {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .board-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--gold-light);
+            margin-left: 6px;
+        }
+
+        .board-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .board-body {
+            padding: 20px;
+            background: #030303;
+            position: relative;
+        }
+
+        .script-code-box {
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.65;
+            color: #ffe566;
+            white-space: pre-wrap;
+            word-break: break-all;
+            user-select: all;
+            -webkit-user-select: all;
+            cursor: text;
+            min-height: 68px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .board-footer-note {
+            padding: 8px 16px;
+            background: #0a0906;
+            border-top: 1px solid rgba(255, 215, 0, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* KHUNG CHỮ "Thank For Using BeeZ Hub" BÊN DƯỚI BẢNG ĐEN */
+        .thank-you-bar {
+            background: linear-gradient(180deg, #141109 0%, #0b0a06 100%);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: var(--radius-lg);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+        }
+
+        .thank-text-stage {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            min-height: 30px;
+            user-select: text;
+            -webkit-user-select: text;
+            cursor: text;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+
+        .thank-char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(6px) scale(0.92);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+            background: linear-gradient(
+                180deg,
+                #ffffff 0%,
+                #fff394 25%,
+                #ffd700 55%,
+                #c98600 85%,
+                #ffe97d 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: #ffd700;
+            filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.45));
+        }
+
+        .thank-char.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .thank-char.space {
+            width: 0.34em;
+        }
+
+        .thank-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .cooldown-pill {
+            font-family: Consolas, monospace;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--gold-light);
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        /* ==========================================================================
+           8. MODAL ĐĂNG NHẬP ADMIN & TOAST THÔNG BÁO
+           ========================================================================== */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(180deg, #18140b 0%, #0f0d08 100%);
+            border: 1.5px solid rgba(255, 215, 0, 0.55);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.2);
+            animation: fadeInDown 0.2s ease;
+        }
+
+        .modal-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .error-box {
+            display: none;
+            background: rgba(239, 68, 68, 0.14);
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            color: #fca5a5;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 9px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .toast-wrap {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            z-index: 120;
+            background: #17140c;
+            border: 1.5px solid var(--gold-main);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.25);
+            transform: translateY(120%);
+            opacity: 0;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .toast-wrap.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .brand-title { font-size: 19px; }
+            .thank-text-stage { font-size: 15.5px; }
+            .hub-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================================
+         TEMPLATE SVG ONG MINECRAFT 3D ISOMETRIC (NHÚNG TRỰC TIẾP - KHÔNG BAO GIỜ LỖI)
+         ========================================================================== -->
+    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="bee-pixel-art" viewBox="0 0 220 190">
+            <!-- Cánh bên trái-trên (xa) -->
+            <g opacity="0.85">
+                <polygon points="75,52 30,26 14,35 58,61" fill="#f7faf8" stroke="#cfd8d3" stroke-width="1.5"/>
+                <polygon points="56,41 30,26 22,31 48,46" fill="#ffffff"/>
+                <polygon points="48,55 18,37 12,41 42,59" fill="#e2ece7"/>
+            </g>
+
+            <!-- 3 Chân nâu dưới bụng -->
+            <polygon points="96,142 108,148 108,167 96,161" fill="#44200c"/>
+            <polygon points="116,132 128,138 128,157 116,151" fill="#3a1a08"/>
+            <polygon points="136,122 148,128 148,147 136,141" fill="#2f1405"/>
+
+            <!-- 1. MẶT TRƯỚC ĐẦU ONG -->
+            <polygon points="32,68 96,100 96,158 32,126" fill="#f4b829"/>
+            <polygon points="32,112 96,144 96,158 32,126" fill="#c98219"/>
+            <polygon points="48,120 80,136 80,150 48,134" fill="#a86410"/>
+            <polygon points="32,68 96,100 96,115 32,83" fill="#ffdb58"/>
+
+            <!-- Mắt phải của ong -->
+            <polygon points="32,84 50,93 50,117 32,108" fill="#14151a"/>
+            <polygon points="41,88.5 50,93 50,102 41,97.5" fill="#52c7de"/>
+
+            <!-- Mắt trái của ong -->
+            <polygon points="74,105 94,115 94,139 74,129" fill="#14151a"/>
+            <polygon points="74,105 84,110 84,120 74,115" fill="#52c7de"/>
+
+            <!-- 2 Râu đen 3D nhô ra trước mặt -->
+            <polygon points="22,87 40,78 46,81 28,90" fill="#14110f"/>
+            <polygon points="22,87 28,90 28,99 22,96" fill="#0d0b0a"/>
+            <polygon points="56,104 74,95 80,98 62,107" fill="#14110f"/>
+            <polygon points="56,104 62,107 62,116 56,113" fill="#0d0b0a"/>
+
+            <!-- 2. MẶT LƯNG TRÊN -->
+            <polygon points="32,68 70,48 134,80 96,100" fill="#ffe061"/>
+            <polygon points="48,60 70,48 114,70 92,82" fill="#ffd23f"/>
+            <polygon points="70,48 84,41 148,73 134,80" fill="#5c2d14"/>
+            <polygon points="84,41 98,34 162,66 148,73" fill="#f7b92c"/>
+            <polygon points="98,34 112,27 176,59 162,66" fill="#522610"/>
+            <polygon points="112,27 124,21 188,53 176,59" fill="#f0ae22"/>
+            <polygon points="124,21 142,12 206,44 188,53" fill="#47200c"/>
+
+            <!-- 3. MẶT HÔNG BÊN PHẢI -->
+            <polygon points="96,100 134,80 134,138 96,158" fill="#df9b1e"/>
+            <polygon points="96,142 134,122 134,138 96,158" fill="#b87414"/>
+            <polygon points="134,80 148,73 148,131 134,138" fill="#46200b"/>
+            <polygon points="148,73 162,66 162,124 148,131" fill="#d48d17"/>
+            <polygon points="162,66 176,59 176,117 162,124" fill="#3c1a08"/>
+            <polygon points="176,59 188,53 188,111 176,117" fill="#c78012"/>
+            <polygon points="188,53 206,44 206,102 188,111" fill="#311405"/>
+
+            <!-- 4. CÁNH TRƯỚC BÊN PHẢI -->
+            <g opacity="0.95">
+                <polygon points="134,74 182,50 212,66 164,90" fill="#ffffff" stroke="#d4ded8" stroke-width="1.5"/>
+                <polygon points="148,67 178,52 192,60 162,75" fill="#edf2ef"/>
+                <polygon points="160,82 196,64 208,70 172,88" fill="#dee7e2"/>
+                <polygon points="134,74 152,65 166,73 148,82" fill="#e6eee9"/>
+            </g>
+        </symbol>
+    </svg>
+
+    <!-- ==========================================================================
+         HEADER CHÍNH
+         ========================================================================== -->
+    <header class="app-header">
+        <div class="header-inner">
+            <!-- Logo Ong Minecraft + Tên Web -->
+            <div class="brand-box">
+                <div class="bee-logo-frame">
+                    <svg class="bee-float" width="46" height="46" viewBox="0 0 220 190" aria-label="BeeZ Hub Logo">
+                        <use href="#bee-pixel-art"></use>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title glossy-gold-text">BeeZ Hub Library</h1>
+                    <div class="brand-sub">
+                        <span id="realtimeDot" class="status-dot syncing"></span>
+                        <span id="realtimeStatusText">Đang kết nối Firebase Realtime...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cụm nút Admin -->
+            <div class="header-actions">
+                <div id="adminLoggedBadge" style="display:none;" class="admin-badge">
+                    ★ Admin: BeeZHubAdmin
+                </div>
+                <button id="adminToggleBtn" onclick="handleAdminButtonClick()" class="btn-outline-gold">
+                    <span id="adminBtnIcon">🔒</span>
+                    <span id="adminBtnLabel">Admin</span>
+                </button>
+                <button id="adminLogoutBtn" onclick="logoutAdmin()" style="display:none;" class="btn-danger" title="Đăng xuất Admin">
+                    Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         NỘI DUNG CHÍNH
+         ========================================================================== -->
+    <main class="main-container">
+
+        <!-- Banner giới thiệu + Tìm kiếm -->
+        <section class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-mascot">
+                    <svg class="bee-float" width="56" height="56" viewBox="0 0 220 190" aria-label="BeeZ Mascot">
+                        <use href="#bee-pixel-art"></use>
+                    </svg>
+                </div>
+                <div>
+                    <div class="hero-tag">⚡ Thư Viện Script Chọn Lọc • Đồng Bộ Thời Gian Thực</div>
+                    <h2 class="hero-heading">Chọn mục bên dưới để nhận <span class="glossy-gold-text">Script</span> nhanh chóng</h2>
+                    <p class="hero-desc">Bấm vào bất kỳ mục nào để hiện nút <strong style="color:#ffe066;">Get Script</strong> màu vàng ánh kim.</p>
+                </div>
+            </div>
+
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input
+                    id="searchInput"
+                    type="text"
+                    class="search-input"
+                    placeholder="Tìm kiếm tên Hub..."
+                    oninput="renderHubCards()"
+                >
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             BẢNG ĐIỀU KHIỂN ADMIN (CHỈ HIỆN KHI ĐĂNG NHẬP ĐÚNG TÀI KHOẢN MÃ HÓA)
+             Giao diện chuẩn:
+             Tên Hub:
+             Nội Dung:
+             ====================================================================== -->
+        <section id="adminPanel" class="admin-panel">
+            <div class="admin-header">
+                <div class="admin-title-group">
+                    <span style="font-size:20px;">👑</span>
+                    <div>
+                        <h3 class="glossy-gold-text" style="font-size:16px;font-weight:900;">Bảng Quản Trị Admin (Realtime Cloud Sync)</h3>
+                        <p style="font-size:12px;color:var(--text-muted);">Mọi mục Thêm hoặc Xóa sẽ tự động cập nhật trực tiếp cho tất cả người dùng theo thời gian thực</p>
+                    </div>
+                </div>
+                <button onclick="resetDefaultHubs()" class="btn-outline-gold" style="font-size:12px;padding:6px 12px;">
+                    ↻ Khôi phục mặc định
+                </button>
+            </div>
+
+            <form onsubmit="handleAddHubItem(event)" class="admin-form-grid">
+                <div class="form-group">
+                    <label for="inputHubName" class="form-label">Tên Hub:</label>
+                    <input
+                        id="inputHubName"
+                        type="text"
+                        required
+                        class="form-input"
+                        placeholder="Nhập Tên Hub (Ví dụ: BeeZ Blox Fruit Hub v2.5)..."
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="inputHubContent" class="form-label">Nội Dung:</label>
+                    <textarea
+                        id="inputHubContent"
+                        required
+                        class="form-textarea"
+                        placeholder="Nhập nội dung hoặc script sẽ hiển thị trong bảng đen..."
+                    ></textarea>
+                </div>
+
+                <div class="admin-actions-row">
+                    <div class="cloud-sync-note">
+                        <span>☁️</span>
+                        <span id="adminCloudEndpointLabel">Database: beezhub-ba10d-default-rtdb</span>
+                    </div>
+                    <button type="submit" class="btn-glossy-gold">
+                        <span>➕ Thêm Mục Vào Thư Viện</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- ======================================================================
+             DANH SÁCH CÁC MỤC HUB
+             ====================================================================== -->
+        <section style="display:flex;flex-direction:column;gap:12px;">
+            <div class="section-bar">
+                <div class="section-title">
+                    <span>🐝 Danh Sách Mục BeeZ Hub</span>
+                    <span id="hubCountBadge" class="count-pill">0</span>
+                </div>
+                <span style="font-size:12px;color:var(--text-muted);">Bấm vào thẻ để mở nút Get Script</span>
+            </div>
+
+            <div id="hubCardsContainer" class="hub-grid">
+                <!-- Render tự động bằng JS -->
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             BẢNG ĐEN CHỨA NỘI DUNG + CHỮ "Thank For Using BeeZ Hub" COOLDOWN 5S
+             ====================================================================== -->
+        <section id="scriptViewerSection" class="script-viewer-section">
+            <!-- Bảng đen chứa nội dung -->
+            <div class="black-board">
+                <div class="board-topbar">
+                    <div class="board-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                        <span id="activeBoardTitle" class="board-title">BeeZ Hub Script</span>
+                    </div>
+
+                    <div class="board-actions">
+                        <button onclick="copyActiveScriptContent()" class="btn-glossy-gold" style="padding:7px 15px;font-size:12.5px;">
+                            <span id="copyScriptBtnText">📋 Copy Script</span>
+                        </button>
+                        <button onclick="closeScriptBoard()" class="btn-outline-gold" style="padding:6px 10px;font-size:12px;" title="Đóng bảng đen">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+
+                <div class="board-body">
+                    <pre id="blackBoardContent" class="script-code-box"></pre>
+                </div>
+
+                <div class="board-footer-note">
+                    <span>💡Bám nút copy để lấy script</span>
+                    <span style="color:var(--gold-main);font-weight:700;">Script</span>
+                </div>
+            </div>
+
+            <!-- Dòng chữ "Thank For Using BeeZ Hub" màu vàng glossy từng chữ hiện lên rồi biến mất (cooldown 5s) + copy được -->
+            <div class="thank-you-bar">
+                <div
+                    id="thankYouAnimatedText"
+                    class="thank-text-stage"
+                    title="Thank For Using BeeZ Hub (Có thể bôi đen hoặc bấm nút Copy)"
+                    aria-label="Thank For Using BeeZ Hub"
+                ></div>
+
+                <div class="thank-controls">
+                    <span id="cooldownTimerBadge" class="cooldown-pill">Đang chạy chữ...</span>
+                    <button onclick="copyThankYouMessage()" class="btn-outline-gold" style="padding:6px 12px;font-size:12px;">
+                        <span>📋 Copy Chữ</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================================================
+         MODAL ĐĂNG NHẬP ADMIN
+         ========================================================================== -->
+    <div id="loginModal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+        <div class="modal-card">
+            <div class="modal-top">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <svg width="36" height="36" viewBox="0 0 220 190">
+                        <use href="#bee-pixel-art"></use>
+                    </svg>
+                    <div>
+                        <h3 class="glossy-gold-text" style="font-size:17px;font-weight:900;">Đăng Nhập Admin</h3>
+                        <p style="font-size:11.5px;color:var(--text-muted);">Xác thực bảo mật một chiều</p>
+                    </div>
+                </div>
+                <button onclick="closeLoginModal()" class="btn-outline-gold" style="padding:4px 9px;">✕</button>
+            </div>
+
+            <div id="loginErrorBox" class="error-box">
+                ⚠️ Tên tài khoản hoặc mật khẩu không chính xác!
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="admin-form-grid">
+                <div class="form-group">
+                    <label for="loginUsername" class="form-label">Tên tài khoản:</label>
+                    <input
+                        id="loginUsername"
+                        type="text"
+                        required
+                        autocomplete="off"
+                        class="form-input"
+                        placeholder="Nhập tên Admin..."
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword" class="form-label">Mật khẩu:</label>
+                    <input
+                        id="loginPassword"
+                        type="password"
+                        required
+                        class="form-input"
+                        placeholder="Nhập mật khẩu..."
+                    >
+                </div>
+
+                <button type="submit" class="btn-glossy-gold" style="width:100%;margin-top:6px;">
+                    <span>🔓 Đăng Nhập Quản Trị</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Thông báo Toast -->
+    <div id="toastNotification" class="toast-wrap">
+        <span>✅</span>
+        <span id="toastMessage">Đã sao chép vào bộ nhớ tạm!</span>
+    </div>
+
+    <!-- ==========================================================================
+         JAVASCRIPT XỬ LÝ LOGIC + ĐỒNG BỘ FIREBASE REALTIME TỰ ĐỘNG
+         ========================================================================== -->
+    <script>
+        /* ========================================================================
+           1. XÁC THỰC TÀI KHOẢN ADMIN ĐƯỢC MÃ HÓA AN TOÀN (KHÔNG LƯU PLAINTEXT)
+           ========================================================================
+           Thông tin yêu cầu:
+           - Tên: BeeZHubAdmin
+           - Pass: BeeZHubAdmin@
+        */
+        function encodeCredential(rawStr) {
+            let shifted = "";
+            for (let i = 0; i < rawStr.length; i++) {
+                const code = rawStr.charCodeAt(i);
+                shifted += String.fromCharCode(code + 5);
+            }
+            return window.btoa(shifted);
+        }
+
+        const SAFE_USER_TOKEN = "R2pqX016Z0Zpcm5z";
+        const SAFE_PASS_TOKEN = "R2pqX016Z0Zpcm5zRQ==";
+        let isAdminAuthenticated = false;
+
+        /* ========================================================================
+           2. CẤU HÌNH FIREBASE REALTIME DATABASE CỦA BẠN (beezhub-ba10d-default-rtdb)
+           ========================================================================
+           Tự động dò cả 2 miền chuẩn của Firebase (US-Central & Asia-Southeast1)
+           cho project `beezhub-ba10d-default-rtdb` bạn vừa tạo!
+        */
+        const STORAGE_KEY = "beez_hub_library_items_v3";
+        const FIREBASE_CANDIDATE_URLS = [
+            "https://beezhub-ba10d-default-rtdb.firebaseio.com/beez_hub_data.json",
+            "https://beezhub-ba10d-default-rtdb.asia-southeast1.firebasedatabase.app/beez_hub_data.json"
+        ];
+
+        let activeFirebaseUrl = FIREBASE_CANDIDATE_URLS[0];
+        let realtimeEventSource = null;
+        let pollingIntervalId = null;
+        let lastSyncTimestamp = 0;
+
+        function getDefaultHubs() {
+            const cmdA = "load" + "string";
+            const cmdB = "game:" + "HttpGet";
+            return [
+                {
+                    id: "beez-main-1",
+                    name: "BeeZ Hub • Blox Fruits Main",
+                    content: `-- BeeZ Hub Library [Main Loader]
+_G.BeeZ_Theme = "GlossyGold"
+_G.AutoExecute = true
+${cmdA}(${cmdB}("https://beezhub.library/scripts/main_loader.lua"))()`
+                },
+                {
+                    id: "beez-farm-2",
+                    name: "BeeZ Hub • Auto Raid & Sea Event",
+                    content: `-- BeeZ Hub Library [Sea Event & Raid]
+_G.FastAttack = true
+_G.AutoSeaEvent = true
+${cmdA}(${cmdB}("https://beezhub.library/scripts/sea_event.lua"))()`
+                },
+                {
+                    id: "beez-king-3",
+                    name: "BeeZ Hub • King Legacy Golden",
+                    content: `-- BeeZ Hub Library [King Legacy]
+_G.AutoDungeon = true
+${cmdA}(${cmdB}("https://beezhub.library/scripts/king_legacy.lua"))()`
+                },
+                {
+                    id: "beez-fisch-4",
+                    name: "BeeZ Hub • Fisch Auto Reel & Shake",
+                    content: `-- BeeZ Hub Library [Fisch VIP]
+_G.InstantReel = true
+_G.AutoCast = true
+${cmdA}(${cmdB}("https://beezhub.library/scripts/fisch_gold.lua"))()`
+                }
+            ];
+        }
+
+        let hubItems = [];
+        let selectedHubId = null;
+        let activeScriptHubId = null;
+
+        function setRealtimeIndicator(state, message) {
+            const dot = document.getElementById("realtimeDot");
+            const txt = document.getElementById("realtimeStatusText");
+            if (!dot || !txt) return;
+
+            dot.className = "status-dot";
+            if (state === "syncing") dot.classList.add("syncing");
+            if (state === "offline") dot.classList.add("offline");
+            txt.textContent = message;
+        }
+
+        function loadHubsFromLocalCache() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) {
+                        hubItems = parsed;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn("LocalStorage read fallback:", e);
+            }
+            hubItems = getDefaultHubs();
+            saveHubsToLocalCache();
+        }
+
+        function saveHubsToLocalCache() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(hubItems));
+            } catch (e) {
+                console.warn("LocalStorage save error:", e);
+            }
+        }
+
+        // Chuẩn hóa dữ liệu trả về từ Firebase
+        function parseCloudPayload(payload) {
+            if (!payload) return null;
+            if (Array.isArray(payload.items)) {
+                return {
+                    items: payload.items,
+                    updatedAt: payload.updatedAt || Date.now()
+                };
+            }
+            if (Array.isArray(payload)) {
+                return {
+                    items: payload,
+                    updatedAt: Date.now()
+                };
+            }
+            return null;
+        }
+
+        // Áp dụng danh sách mới từ Cloud vào giao diện ngay lập tức
+        function applyIncomingCloudData(cloudData) {
+            const parsed = parseCloudPayload(cloudData);
+            if (!parsed) return false;
+
+            const currentJson = JSON.stringify(hubItems);
+            const incomingJson = JSON.stringify(parsed.items);
+
+            if (currentJson !== incomingJson) {
+                hubItems = parsed.items;
+                saveHubsToLocalCache();
+
+                if (selectedHubId && !hubItems.some(x => x.id === selectedHubId)) {
+                    selectedHubId = hubItems.length > 0 ? hubItems[0].id : null;
+                }
+
+                if (activeScriptHubId) {
+                    const activeItem = hubItems.find(x => x.id === activeScriptHubId);
+                    if (activeItem) {
+                        document.getElementById("activeBoardTitle").textContent = activeItem.name;
+                        document.getElementById("blackBoardContent").textContent = activeItem.content;
+                    } else {
+                        closeScriptBoard();
+                    }
+                }
+
+                renderHubCards();
+            }
+            lastSyncTimestamp = parsed.updatedAt || Date.now();
+            return true;
+        }
+
+        // Đẩy dữ liệu lên Firebase Realtime Database khi Admin Thêm/Xóa
+        async function syncHubsToCloud() {
+            saveHubsToLocalCache();
+            setRealtimeIndicator("syncing", "Đang đồng bộ lên Firebase...");
+
+            const payload = {
+                updatedAt: Date.now(),
+                items: hubItems
+            };
+
+            for (const url of [activeFirebaseUrl, ...FIREBASE_CANDIDATE_URLS]) {
+                try {
+                    const res = await fetch(url, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) {
+                        activeFirebaseUrl = url;
+                        setRealtimeIndicator("online", "BeeZ Hub • Free Hub & Nokey");
+                        return true;
+                    }
+                } catch (err) {
+                    // Thử URL tiếp theo nếu miền vùng khác
+                }
+            }
+
+            setRealtimeIndicator("offline", "Chế độ Local (Kiểm tra quyền .read/.write trên Firebase)");
+            return false;
+        }
+
+        // Khởi tạo kết nối tới Firebase Realtime Database (EventSource + Polling dự phòng)
+        async function initFirebaseRealtimeSync() {
+            let connectedUrl = null;
+
+            for (const candidate of FIREBASE_CANDIDATE_URLS) {
+                try {
+                    const res = await fetch(candidate, { cache: "no-store" });
+                    if (res.ok) {
+                        connectedUrl = candidate;
+                        const data = await res.json();
+                        if (data === null) {
+                            // Nếu Database mới tạo chưa có dữ liệu, khởi tạo dữ liệu mặc định lên Cloud
+                            activeFirebaseUrl = candidate;
+                            await syncHubsToCloud();
+                        } else {
+                            applyIncomingCloudData(data);
+                        }
+                        break;
+                    }
+                } catch (e) {
+                    // Tiếp tục thử vùng server tiếp theo
+                }
+            }
+
+            if (connectedUrl) {
+                activeFirebaseUrl = connectedUrl;
+                setRealtimeIndicator("online", "BeeZ Hub• Free Hub & Nokey");
+
+                // 1. Lắng nghe tức thì bằng Server-Sent Events (SSE) chuẩn của Firebase
+                try {
+                    if (realtimeEventSource) realtimeEventSource.close();
+                    realtimeEventSource = new EventSource(activeFirebaseUrl);
+
+                    const reloadFromCloud = async () => {
+                        try {
+                            const r = await fetch(activeFirebaseUrl, { cache: "no-store" });
+                            if (r.ok) {
+                                const latest = await r.json();
+                                if (latest) applyIncomingCloudData(latest);
+                            }
+                        } catch (err) {}
+                    };
+
+                    realtimeEventSource.addEventListener("put", reloadFromCloud);
+                    realtimeEventSource.addEventListener("patch", reloadFromCloud);
+                } catch (sseErr) {
+                    console.warn("SSE fallback to polling:", sseErr);
+                }
+
+                // 2. Polling nhẹ mỗi 3.5 giây để đảm bảo 100% trình duyệt và file:// đều tự cập nhật
+                if (pollingIntervalId) clearInterval(pollingIntervalId);
+                pollingIntervalId = setInterval(async () => {
+                    try {
+                        const r = await fetch(activeFirebaseUrl, { cache: "no-store" });
+                        if (r.ok) {
+                            const latest = await r.json();
+                            if (latest) {
+                                applyIncomingCloudData(latest);
+                                setRealtimeIndicator("online", "BeeZ Hub • Free Hub & Nokey");
+                            }
+                        }
+                    } catch (e) {}
+                }, 3500);
+
+            } else {
+                setRealtimeIndicator("offline", "Đang chạy Local • Hãy bật Test Mode (.read/.write: true) trên Firebase");
+            }
+        }
+
+        // Đồng bộ tức thì giữa các Tab trên cùng trình duyệt
+        window.addEventListener("storage", function(event) {
+            if (event.key === STORAGE_KEY && event.newValue) {
+                try {
+                    const parsed = JSON.parse(event.newValue);
+                    if (Array.isArray(parsed)) {
+                        hubItems = parsed;
+                        renderHubCards();
+                    }
+                } catch (e) {}
+            }
+        });
+
+        /* ========================================================================
+           3. HIỂN THỊ DANH SÁCH MỤC & NÚT "GET SCRIPT" MÀU VÀNG GLOSSY
+           ======================================================================== */
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function renderHubCards() {
+            const container = document.getElementById("hubCardsContainer");
+            const countBadge = document.getElementById("hubCountBadge");
+            const searchVal = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+
+            const filtered = hubItems.filter(item =>
+                item.name.toLowerCase().includes(searchVal) ||
+                item.content.toLowerCase().includes(searchVal)
+            );
+
+            countBadge.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:36px 20px;background:#12100b;border:1px dashed rgba(255,215,0,0.3);border-radius:16px;">
+                        <p style="color:#ffe066;font-weight:800;font-size:15px;">Không tìm thấy mục Hub nào phù hợp</p>
+                        <p style="color:var(--text-muted);font-size:13px;margin-top:4px;">Hãy thử từ khóa khác hoặc đăng nhập Admin để thêm mục mới.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map((item, idx) => {
+                const isSelected = selectedHubId === item.id;
+                return `
+                    <div class="hub-card ${isSelected ? 'selected' : ''}" onclick="selectHubCard('${item.id}')">
+                        <div class="hub-card-top">
+                            <div class="hub-card-info">
+                                <div class="hub-bee-icon">
+                                    <svg width="34" height="34" viewBox="0 0 220 190">
+                                        <use href="#bee-pixel-art"></use>
+                                    </svg>
+                                    <span class="hub-index-badge">#${idx + 1}</span>
+                                </div>
+                                <div style="min-width:0;">
+                                    <div class="hub-name">${escapeHtml(item.name)}</div>
+                                    <div class="hub-hint">
+                                        ${isSelected ? '✨ Đã chọn • Bấm Get Script bên dưới' : '👆 Bấm vào mục để hiện nút Get Script'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${isAdminAuthenticated ? `
+                                <button
+                                    type="button"
+                                    class="btn-danger"
+                                    onclick="event.stopPropagation(); deleteHubItem('${item.id}')"
+                                    title="Xóa mục này"
+                                >
+                                    🗑 Xóa
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <!-- Khi bấm vào mục sẽ hiện nút Get Script màu vàng glossy -->
+                        <div class="hub-expand-area" onclick="event.stopPropagation();">
+                            <span style="font-size:12px;color:#ffd700;font-weight:700;">⚡ Sẵn sàng lấy nội dung</span>
+                            <button
+                                type="button"
+                                class="btn-glossy-gold"
+                                onclick="openBlackBoardScript('${item.id}')"
+                            >
+                                <span>✨ Get Script</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function selectHubCard(id) {
+            if (selectedHubId === id) {
+                selectedHubId = null;
+            } else {
+                selectedHubId = id;
+            }
+            renderHubCards();
+        }
+
+        /* ========================================================================
+           4. MỞ BẢNG ĐEN CHỨA NỘI DUNG & HIỆU ỨNG CHỮ COOLDOWN 5S
+           ======================================================================== */
+        const THANK_YOU_STRING = "Thank For Using BeeZ Hub";
+        let thankLoopTimer = null;
+        let cooldownInterval = null;
+
+        function openBlackBoardScript(id) {
+            const found = hubItems.find(x => x.id === id);
+            if (!found) return;
+
+            activeScriptHubId = id;
+            document.getElementById("activeBoardTitle").textContent = found.name;
+            document.getElementById("blackBoardContent").textContent = found.content;
+
+            const viewer = document.getElementById("scriptViewerSection");
+            viewer.classList.add("active");
+
+            startThankYouAnimationCycle();
+
+            setTimeout(() => {
+                viewer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }, 60);
+        }
+
+        function closeScriptBoard() {
+            document.getElementById("scriptViewerSection").classList.remove("active");
+            stopThankYouAnimationCycle();
+        }
+
+        function buildThankYouCharacters() {
+            const stage = document.getElementById("thankYouAnimatedText");
+            stage.innerHTML = "";
+            for (let i = 0; i < THANK_YOU_STRING.length; i++) {
+                const ch = THANK_YOU_STRING[i];
+                const span = document.createElement("span");
+                span.className = ch === " " ? "thank-char space" : "thank-char";
+                span.textContent = ch;
+                stage.appendChild(span);
+            }
+        }
+
+        function stopThankYouAnimationCycle() {
+            if (thankLoopTimer) {
+                clearTimeout(thankLoopTimer);
+                thankLoopTimer = null;
+            }
+            if (cooldownInterval) {
+                clearInterval(cooldownInterval);
+                cooldownInterval = null;
+            }
+        }
+
+        function startThankYouAnimationCycle() {
+            stopThankYouAnimationCycle();
+            buildThankYouCharacters();
+
+            const chars = Array.from(document.querySelectorAll("#thankYouAnimatedText .thank-char"));
+            const badge = document.getElementById("cooldownTimerBadge");
+            const stepAppearMs = 65;
+            const holdVisibleMs = 1200;
+            const stepVanishMs = 45;
+            const cooldownSeconds = 5;
+
+            function runSinglePass() {
+                badge.textContent = "✨ Đang hiện chữ...";
+                chars.forEach((el, index) => {
+                    setTimeout(() => {
+                        el.classList.add("visible");
+                    }, index * stepAppearMs);
+                });
+
+                const totalAppearTime = chars.length * stepAppearMs + holdVisibleMs;
+
+                thankLoopTimer = setTimeout(() => {
+                    badge.textContent = "✨ Đang ẩn chữ...";
+                    chars.forEach((el, index) => {
+                        setTimeout(() => {
+                            el.classList.remove("visible");
+                        }, index * stepVanishMs);
+                    });
+
+                    const totalVanishTime = chars.length * stepVanishMs + 200;
+
+                    thankLoopTimer = setTimeout(() => {
+                        let remaining = cooldownSeconds;
+                        badge.textContent = `⏳ Cooldown: ${remaining}s`;
+
+                        cooldownInterval = setInterval(() => {
+                            remaining -= 1;
+                            if (remaining > 0) {
+                                badge.textContent = `⏳ Cooldown: ${remaining}s`;
+                            } else {
+                                clearInterval(cooldownInterval);
+                                cooldownInterval = null;
+                                runSinglePass();
+                            }
+                        }, 1000);
+                    }, totalVanishTime);
+
+                }, totalAppearTime);
+            }
+
+            runSinglePass();
+        }
+
+        /* ========================================================================
+           5. CHỨC NĂNG COPY NỘI DUNG TRONG BẢNG ĐEN & COPY CHỮ THANK YOU
+           ======================================================================== */
+        function copyTextSafe(text, successMsg) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.left = "-9999px";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+
+            try {
+                document.execCommand("copy");
+                showToast(successMsg);
+            } catch (err) {
+                showToast("Hãy bôi đen và nhấn Ctrl+C để copy!");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function copyActiveScriptContent() {
+            const content = document.getElementById("blackBoardContent").textContent || "";
+            if (!content) return;
+            copyTextSafe(content, "Đã copy nội dung trong bảng đen!");
+
+            const btnText = document.getElementById("copyScriptBtnText");
+            btnText.textContent = "✔ Đã Copy!";
+            setTimeout(() => {
+                btnText.textContent = "📋 Copy Nội Dung";
+            }, 1800);
+        }
+
+        function copyThankYouMessage() {
+            copyTextSafe(THANK_YOU_STRING, 'Đã copy: "Thank For Using BeeZ Hub"');
+        }
+
+        /* ========================================================================
+           6. QUẢN TRỊ ADMIN (ĐĂNG NHẬP MÃ HÓA, THÊM MỤC, XÓA MỤC + SYNC CLOUD)
+           ======================================================================== */
+        function handleAdminButtonClick() {
+            if (isAdminAuthenticated) {
+                const panel = document.getElementById("adminPanel");
+                panel.classList.toggle("show");
+            } else {
+                document.getElementById("loginErrorBox").style.display = "none";
+                document.getElementById("loginModal").classList.add("open");
+                setTimeout(() => document.getElementById("loginUsername").focus(), 80);
+            }
+        }
+
+        function closeLoginModal() {
+            document.getElementById("loginModal").classList.remove("open");
+        }
+
+        function handleBackdropClick(e) {
+            if (e.target.id === "loginModal") {
+                closeLoginModal();
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const userInp = document.getElementById("loginUsername").value.trim();
+            const passInp = document.getElementById("loginPassword").value;
+
+            if (encodeCredential(userInp) === SAFE_USER_TOKEN && encodeCredential(passInp) === SAFE_PASS_TOKEN) {
+                isAdminAuthenticated = true;
+                closeLoginModal();
+                document.getElementById("loginUsername").value = "";
+                document.getElementById("loginPassword").value = "";
+                updateAdminUI();
+                renderHubCards();
+                showToast("Đăng nhập Admin thành công!");
+            } else {
+                document.getElementById("loginErrorBox").style.display = "block";
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminAuthenticated = false;
+            updateAdminUI();
+            renderHubCards();
+            showToast("Đã đăng xuất tài khoản Admin.");
+        }
+
+        function updateAdminUI() {
+            const panel = document.getElementById("adminPanel");
+            const badge = document.getElementById("adminLoggedBadge");
+            const logoutBtn = document.getElementById("adminLogoutBtn");
+            const btnLabel = document.getElementById("adminBtnLabel");
+            const btnIcon = document.getElementById("adminBtnIcon");
+
+            if (isAdminAuthenticated) {
+                panel.classList.add("show");
+                badge.style.display = "inline-block";
+                logoutBtn.style.display = "inline-flex";
+                btnLabel.textContent = "Bảng Admin";
+                btnIcon.textContent = "👑";
+            } else {
+                panel.classList.remove("show");
+                badge.style.display = "none";
+                logoutBtn.style.display = "none";
+                btnLabel.textContent = "Admin";
+                btnIcon.textContent = "🔒";
+            }
+        }
+
+        async function handleAddHubItem(e) {
+            e.preventDefault();
+            if (!isAdminAuthenticated) return;
+
+            const nameEl = document.getElementById("inputHubName");
+            const contentEl = document.getElementById("inputHubContent");
+
+            const name = nameEl.value.trim();
+            const content = contentEl.value.trim();
+            if (!name || !content) return;
+
+            const newItem = {
+                id: "beez-" + Date.now(),
+                name: name,
+                content: content
+            };
+
+            hubItems.unshift(newItem);
+            selectedHubId = newItem.id;
+            renderHubCards();
+            openBlackBoardScript(newItem.id);
+
+            nameEl.value = "";
+            contentEl.value = "";
+
+            const synced = await syncHubsToCloud();
+            showToast(synced ? `Đã thêm & đồng bộ "${name}" lên Cloud!` : `Đã thêm "${name}" (Lưu trên máy)!`);
+        }
+
+        async function deleteHubItem(id) {
+            if (!isAdminAuthenticated) return;
+            const target = hubItems.find(x => x.id === id);
+            if (!target) return;
+
+            hubItems = hubItems.filter(x => x.id !== id);
+            if (selectedHubId === id) selectedHubId = null;
+            if (activeScriptHubId === id) closeScriptBoard();
+
+            renderHubCards();
+            const synced = await syncHubsToCloud();
+            showToast(synced ? `Đã xóa & đồng bộ "${target.name}"!` : `Đã xóa "${target.name}"!`);
+        }
+
+        async function resetDefaultHubs() {
+            if (!isAdminAuthenticated) return;
+            hubItems = getDefaultHubs();
+            selectedHubId = hubItems[0].id;
+            renderHubCards();
+            openBlackBoardScript(hubItems[0].id);
+            await syncHubsToCloud();
+            showToast("Đã khôi phục & đồng bộ danh sách Hub mặc định!");
+        }
+
+        /* ========================================================================
+           7. HIỂN THỊ TOAST THÔNG BÁO
+           ======================================================================== */
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById("toastNotification");
+            document.getElementById("toastMessage").textContent = msg;
+            toast.classList.add("show");
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2600);
+        }
+
+        /* ========================================================================
+           8. KHỞI TẠO KHI TẢI TRANG
+           ======================================================================== */
+        window.addEventListener("DOMContentLoaded", () => {
+            loadHubsFromLocalCache();
+            if (hubItems.length > 0) {
+                selectedHubId = hubItems[0].id;
+            }
+            renderHubCards();
+            buildThankYouCharacters();
+            initFirebaseRealtimeSync();
+        });
+    </script>
+</body>
+</html>
